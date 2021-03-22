@@ -17,7 +17,6 @@ int main(int argc, char *argv[]){
     struct sockaddr_in clientAddress; // Client address
     unsigned short serverPort = 99999; // Server port
     unsigned int clientLength;
-
     /*
     Test for correct number of arguments.
         - There are no arguments for server side since port is hard coded
@@ -31,16 +30,13 @@ int main(int argc, char *argv[]){
     if((serverSocket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP)) < 0 ){
         DieWithError("socket () failed");
     }
-
     serverAddress.sin_family = AF_INET; /* Internet address family */
 	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY); /* Any incoming interface */
 	serverAddress.sin_port = htons(serverPort); /* Local port */
-
     /* Bind to the local address */
 	if(bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0){
 	    DieWithError ( "bind () failed");
     }
-
     // Mark the socket so it will listen for incoming connections
     if(listen(serverSocket, MAXPENDING) < 0){
         DieWithError("listen() failed");
@@ -55,7 +51,6 @@ int main(int argc, char *argv[]){
         if((clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientLength)) < 0){
             DieWithError("accept() failed");
         }
-
         //clientSocket is connected to a client!
         HandleTCPClient(clientSocket);
     }

@@ -16,14 +16,22 @@ int main(int argc, char *argv[]){
     unsigned short serverPort = 99999;
     char *serverIP;
     char *filename;
-    char *headerBuffer[HEADERRCVBUFSIZE];
-    char *dataBuffer[DATARCVBUFSIZE];
-    unsigned int filenameLen;
+    short rcvHeaderBuffer[HEADERRCVBUFSIZE]; //buffer for header always 4 byte
+    char *dataBuffer[DATARCVBUFSIZE]; //buffer for data, max 80 byte
     int bytesRcvd, totalBytesRcvd;
+
+    /*header of request
+        - requestCount - Count part of header. Gotten from strlen(filename)
+        - requestSeqNum - Sequence Number part of header. Always 0 in request.
+    */
+    short requestHeader[2]; // array of 2 shorts = 4 bytes
+    short requestCount;
+    short requestSeqNum = 0;
+
 
     // Test for correct number of arguments
     if((argc<2)||(argc>3)){
-        printf("Usage: %s <Server IP> <filename>\n"), argv[0];
+        printf("Usage: %s <Server IP> <filename>\n", argv[0]);
         exit(1);
     }
 
@@ -46,12 +54,22 @@ int main(int argc, char *argv[]){
         DieWithError("connect() failed");
     }
 
-    filenameLen = strlen(filename);
+    requestCount = strlen(filename); //data bytes in filename
+    requestHeader[0] = htons(requestCount);
+    requestHeader[1] = htons(requestSeqNum);
 
-    //Send filename string
-    if(send(clientSocket, filename, filenameLen, 0)!= filenameLen){
-        DieWithError("send() sent a differnet number of bytes than expected");
+    /*Send filename string
+        send -header
+        send -data (filename)
+    */
+    if(send(clientSocket, &requestHeader[0], 4, 0)!= 4){
+        DieWithError("client send() sent a differnet number of bytes than expected in header");
     }
+    if(send(clientSocket, filename, requestCount, 0)!= requestCount){
+        DieWithError("client send() sent a differnet number of bytes than expected in data");
+    }
+
+    printf("Packet %hi transmitted with %hi data bytes\n", requestSeqNum, requestCount);
 
     /* Receive the file from the server
         do while loop recv() call until end of transmission
