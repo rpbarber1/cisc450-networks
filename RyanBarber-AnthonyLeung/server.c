@@ -3,6 +3,10 @@
 	Anthony Leung
 	CISC 450
 	Program 1
+
+	File contains fucntions for creating socket,
+	sending and receving messages over sockets,
+	and reading file for transmission.
 */
 
 
@@ -27,6 +31,11 @@ struct msg{
     char message[DATABUFFER]; // message - data part of message
 };
 
+/*
+	Read file and send over socket
+	- clntSocket - desination socket
+	- filename - name of file to be transmitted
+*/
 void sendMessage(int clntSocket, char *filename){
     struct msg messageToSend;
     short currentSeqNum = 1;
@@ -34,10 +43,11 @@ void sendMessage(int clntSocket, char *filename){
 
 
     //open file stream for requested file
-    FILE *fp = fopen(filename, "r");
+
+    FILE *fp = fopen(filename, "r"); //file pointer for reading input file
+    
     //loop reading file until 
     //fgets = 0 when EOF or error, check at end
-
     while(fgets(&messageToSend.message, DATABUFFER+1, fp) > 0){
         //strlen reads \n not \0
         currentBytesSent = strlen(&messageToSend.message); 
@@ -55,13 +65,6 @@ void sendMessage(int clntSocket, char *filename){
         if(send(clntSocket, &messageToSend.message, currentBytesSent, 0) != currentBytesSent){
             DieWithError("send() failed");
         }
-        /*
-        printf("%s ",messageToSend.message);
-        printf("%d ",currentBytesSent);
-        //array index at 0
-        printf("%#08x \n", messageToSend.message[currentBytesSent]); //last letter
-        printf("%#08x \n", messageToSend.message[currentBytesSent-1]); //nl
-        */
 
         printf("Packet %hi transmitted with %hi data bytes\n", currentSeqNum,currentBytesSent);
         
@@ -69,6 +72,7 @@ void sendMessage(int clntSocket, char *filename){
 
     }
 
+    //check if fgets() is done or there was an error
     if(ferror(fp)){
         DieWithError("fgets() read failed");
     }

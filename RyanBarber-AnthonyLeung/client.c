@@ -3,6 +3,10 @@
 	Anthony Leung
 	CISC 450
 	Program 1
+
+	File contains fucntions for creating socket,
+	sending and receving messages over sockets,
+	and for writing data received to file.
 */
 
 
@@ -87,8 +91,9 @@ int main(int argc, char *argv[]){
 
     struct msg messageToRecv;
 
-    FILE *fp = fopen("out.txt", "w");
+    FILE *fp = fopen("out.txt", "w"); //file pointer for output file
 
+    //while still receiving data, receive message and write to file
     while(endTransmission){
         if(currenBytesRcvd = recv(clientSocket, &messageToRecv, HEADERBUFFER, 0) <= 0){
             DieWithError("recv() failed or connection closed prematurely");
@@ -102,6 +107,7 @@ int main(int argc, char *argv[]){
             DieWithError("recv() failed or connection closed prematurely");
         }
 
+	//if EOT packet received, flip endTransmission bool
         if(messageToRecv.count == 0){
             endTransmission = 0;
             printf("End of Transmission Packet with sequence number %hi received with %hi data bytes\n", messageToRecv.seqnum, messageToRecv.count);
