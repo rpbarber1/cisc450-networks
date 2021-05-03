@@ -11,7 +11,7 @@
 #include <arpa/inet.h> /*for sockaddr_in and inet_addr()*/
 #include <stdlib.h>
 #include <string.h>
-//#include <unistd.h>
+#include <unistd.h>
 #include <time.h>
 #include <errno.h>
 
@@ -146,8 +146,8 @@ int main(int argc, char *argv[]){
         	printf("Packet %hi received with %hi data bytes\n", messageToRecv.seqnum, messageToRecv.count);
         	rcvd_packets ++;
         	totalBytesRcvd = totalBytesRcvd + messageToRecv.count;
+        	
         	//write buffer to file
-
         	if(fputs(messageToRecv.message, fp) < 0){
             		DieWithError("fputs() write failed");
         	}
@@ -179,7 +179,7 @@ int main(int argc, char *argv[]){
     }
 
     fclose(fp);
-    //close(clientSocket);
+    close(clientSocket);
 
     //statistics
     printf("\nTotal number of data packets received successfully: %d\n", rcvd_packets + dups_rcvd);

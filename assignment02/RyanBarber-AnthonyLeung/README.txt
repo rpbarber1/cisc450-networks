@@ -20,6 +20,8 @@ Compilation Instructions
 
 	Doing the 'make clean' command will remove the ouput file with the object and executables.
 
+
+
 Execution Instructions (bash shell) - I use Linux Ubuntu 20.04
 	Server side:
 		./server [timeout interval] [packet loss rate]
@@ -32,6 +34,8 @@ Execution Instructions (bash shell) - I use Linux Ubuntu 20.04
 		
 		example: ACK loss rate = 0.2, filename = input-file.txt
 			./client 127.0.0.1 input-file.txt 0.2
+
+	The program will work if both server and client have loss rate > 0
 
 Running Instructions
 	First, open 2 terminal windows. Then execute the server program first (there is no output).
