@@ -11,11 +11,12 @@
 #include <arpa/inet.h> /*for sockaddr_in and inet_addr()*/
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <time.h>
 #include <errno.h>
 
 #define MESSAGEBUFFER 84 // Max size of packet
+#define DATABUFFER 80 // Max size of message (data part)
 
 void DieWithError(char *errorMessage);
 int SimulateACKLoss(double loss_ratio);
@@ -24,7 +25,7 @@ int SimulateACKLoss(double loss_ratio);
 struct msg{
     short count; // count - Count part of header. Gotten from strlen(filename)
     short seqnum; // seqNum - Sequence Number part of header. Always 0 in request
-    char message[80]; // message - data part of message
+    char message[DATABUFFER]; // message - data part of message
 };
 
 struct ack{
@@ -115,7 +116,7 @@ int main(int argc, char *argv[]){
     
     	
     	//receive data packet from server
-        memset(messageToRecv.message, 0, 80);
+        memset(messageToRecv.message, 0, DATABUFFER);
         if(currenBytesRcvd = recvfrom(clientSocket, &messageToRecv, MESSAGEBUFFER, 0, (struct sockaddr *) &clientAddress, &clientAddressSize) < 0){
             DieWithError("recvfrom() failed ");
         }
@@ -178,7 +179,7 @@ int main(int argc, char *argv[]){
     }
 
     fclose(fp);
-    close(clientSocket);
+    //close(clientSocket);
 
     //statistics
     printf("\nTotal number of data packets received successfully: %d\n", rcvd_packets + dups_rcvd);

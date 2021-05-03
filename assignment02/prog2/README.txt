@@ -31,7 +31,7 @@ Execution Instructions (bash shell) - I use Linux Ubuntu 20.04
 		./client 127.0.0.1 [filename] [ACK loss rate]
 		
 		example: ACK loss rate = 0.2, filename = input-file.txt
-			./client input-file.txt 0.2
+			./client 127.0.0.1 input-file.txt 0.2
 
 Running Instructions
 	First, open 2 terminal windows. Then execute the server program first (there is no output).

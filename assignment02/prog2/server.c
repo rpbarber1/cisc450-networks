@@ -17,6 +17,7 @@
 #include <errno.h>
 
 #define MESSAGEBUFFER 84 // max num of bytes in line, also restricts file name request
+#define DATABUFFER 80//max size of message (data part)
 
 void DieWithError(char *errorMessage); /* Error handling function */
 void sendMessage(int serversock, char *filename, double loss_ratio, struct sockaddr_in *clntaddr);
@@ -26,7 +27,7 @@ int SimulateLoss(double loss_ratio);
 struct msg{
     short count; // count - Count part of header. Gotten from strlen(filename)
     short seqnum; // seqNum - Sequence Number part of header. Always 0 in request
-    char message[80]; // message - data part of message
+    char message[DATABUFFER]; // message - data part of message
 };
 
 struct ack{
@@ -74,7 +75,7 @@ void sendMessage(int serversock, char *filename, double loss_ratio, struct socka
     //loop reading file until 
     //fgets = 0 when EOF or error, check at end
 
-    while(fgets(messageToSend.message, 81, fp) > 0){
+    while(fgets(messageToSend.message, DATABUFFER, fp) > 0){
         //strlen reads \n not \0
         currentBytesSent = strlen(messageToSend.message); 
         totalbytes += currentBytesSent;
@@ -204,6 +205,7 @@ void sendMessage(int serversock, char *filename, double loss_ratio, struct socka
     messageToSend.message[0] = '\0';
 
     // send EOT packet
+    // hard coded EOT packet number of bytes = 5
     if(sendto(serversock, &messageToSend, 5, 0, (struct sockaddr *) clntaddr, sizeof(*clntaddr)) != 5){
         DieWithError("send() failed");
     }
